@@ -1,0 +1,67 @@
+[
+  {
+    "dataset_size": 1000,
+    "load_time_ms": 0.588209,
+    "trie_build_time_ms": 0.158417,
+    "trie_node_count": 3275,
+    "trie_memory_kb": 806.664,
+    "trie_search_avg_us": 0.300502,
+    "linear_search_avg_us": 3.65628,
+    "search_speedup": 12.1673,
+    "trie_typo_avg_us": 15.3341,
+    "linear_typo_avg_us": 110.798,
+    "typo_speedup": 7.2256
+  },
+  {
+    "dataset_size": 5000,
+    "load_time_ms": 4.06888,
+    "trie_build_time_ms": 0.794875,
+    "trie_node_count": 16207,
+    "trie_memory_kb": 3993.85,
+    "trie_search_avg_us": 0.253428,
+    "linear_search_avg_us": 17.3473,
+    "search_speedup": 68.4508,
+    "trie_typo_avg_us": 33.2683,
+    "linear_typo_avg_us": 527.687,
+    "typo_speedup": 15.8615
+  },
+  {
+    "dataset_size": 10000,
+    "load_time_ms": 3.33,
+    "trie_build_time_ms": 1.38138,
+    "trie_node_count": 32887,
+    "trie_memory_kb": 8098.54,
+    "trie_search_avg_us": 0.621758,
+    "linear_search_avg_us": 32.8768,
+    "search_speedup": 52.8772,
+    "trie_typo_avg_us": 41.0325,
+    "linear_typo_avg_us": 923.707,
+    "typo_speedup": 22.5116
+  },
+  {
+    "dataset_size": 25000,
+    "load_time_ms": 6.7045,
+    "trie_build_time_ms": 3.54829,
+    "trie_node_count": 80969,
+    "trie_memory_kb": 19953.7,
+    "trie_search_avg_us": 1.66608,
+    "linear_search_avg_us": 81.0497,
+    "search_speedup": 48.6468,
+    "trie_typo_avg_us": 88.77,
+    "linear_typo_avg_us": 2366.06,
+    "typo_speedup": 26.6538
+  },
+  {
+    "dataset_size": 50000,
+    "load_time_ms": 14.5797,
+    "trie_build_time_ms": 7.66162,
+    "trie_node_count": 159128,
+    "trie_memory_kb": 39248.8,
+    "trie_search_avg_us": 3.12552,
+    "linear_search_avg_us": 163.96,
+    "search_speedup": 52.4587,
+    "trie_typo_avg_us": 170.255,
+    "linear_typo_avg_us": 4635.18,
+    "typo_speedup": 27.2249
+  }
+]

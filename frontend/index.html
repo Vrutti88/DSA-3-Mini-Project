@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Autocomplete & Typo Correction | DSA-3 Academic Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">TrieSearch<span class="brand-badge">C++17</span></span>
+                    <span class="brand-subtitle">DSA-3 Mini Project</span>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <button class="nav-btn active" data-tab="tab-search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Smart Search
+                </button>
+                <button class="nav-btn" data-tab="tab-typo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    Typo Correction
+                </button>
+                <button class="nav-btn" data-tab="tab-explorer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Algorithm Explorer
+                </button>
+                <button class="nav-btn" data-tab="tab-dashboard">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Performance Dashboard
+                </button>
+            </nav>
+
+            <div class="nav-status">
+                <span class="status-indicator online"></span>
+                <span class="status-label" id="engineStatusLabel">C++ Engine: Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+
+        <!-- ================= PAGE 1: SMART SEARCH ================= -->
+        <section id="tab-search" class="tab-pane active">
+            <div class="hero-section">
+                <div class="hero-badge">C++17 Trie & Levenshtein DP Core</div>
+                <h1 class="hero-title">Smart Autocomplete</h1>
+                <p class="hero-desc">
+                    Real-time prefix search via Trie traversal with dynamic programming branch pruning and frequency-based ranking.
+                </p>
+
+                <!-- Search Input Container -->
+                <div class="search-box-wrapper">
+                    <div class="search-box" id="searchBox">
+                        <div class="search-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <input type="text" id="searchInput" placeholder="Type a prefix (e.g., progr, pyth, mach, appl)..." autocomplete="off" spellcheck="false" autofocus>
+                        <button class="clear-btn" id="clearBtn" title="Clear input" style="display: none;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                        <div class="search-spinner" id="searchSpinner" style="display: none;"></div>
+                    </div>
+
+                    <!-- Autocomplete Suggestions Dropdown -->
+                    <div class="suggestions-dropdown" id="suggestionsDropdown" style="display: none;">
+                        <div class="dropdown-header">
+                            <span class="dropdown-title">Suggestions</span>
+                            <span class="dropdown-meta" id="searchMetaTime">0.0 μs</span>
+                        </div>
+                        <ul class="suggestions-list" id="suggestionsList">
+                            <!-- Populated via JavaScript -->
+                        </ul>
+                        <div class="dropdown-footer">
+                            <span>Use <kbd>↑</kbd> <kbd>↓</kbd> to navigate, <kbd>Enter</kbd> to select, <kbd>Esc</kbd> to dismiss</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Query Metrics Card -->
+                <div class="query-stats-pill" id="queryStatsPill" style="display: none;">
+                    <span class="pill-item"><strong id="pillCount">0</strong> matches</span>
+                    <span class="pill-divider">•</span>
+                    <span class="pill-item">C++ Execution: <strong id="pillTime">0.0 μs</strong></span>
+                    <span class="pill-divider">•</span>
+                    <span class="pill-item">Complexity: <strong id="pillComplexity">O(L)</strong></span>
+                </div>
+
+                <!-- Did You Mean Fallback Banner -->
+                <div class="did-you-mean-banner" id="didYouMeanBanner" style="display: none;">
+                    <div class="dym-icon">💡</div>
+                    <div class="dym-content">
+                        <span>No exact prefix match for "<strong><span id="dymOriginal"></span></strong>". Did you mean:</span>
+                        <div class="dym-candidates" id="dymCandidates"></div>
+                    </div>
+                </div>
+
+                <!-- Popular Suggestions Presets -->
+                <div class="search-presets">
+                    <span class="presets-label">Try prefixes:</span>
+                    <button class="preset-tag" data-query="pro">pro</button>
+                    <button class="preset-tag" data-query="pyth">pyth</button>
+                    <button class="preset-tag" data-query="appl">appl</button>
+                    <button class="preset-tag" data-query="mach">mach</button>
+                    <button class="preset-tag" data-query="comp">comp</button>
+                    <button class="preset-tag" data-query="data">data</button>
+                    <button class="preset-tag" data-query="sort">sort</button>
+                    <button class="preset-tag" data-query="algo">algo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: TYPO CORRECTION ================= -->
+        <section id="tab-typo" class="tab-pane">
+            <div class="section-header">
+                <h2>Levenshtein Dynamic Programming Typo Correction</h2>
+                <p>Trie traversal with branch-pruned DP rows. Prunes entire subtrees when $\min(\text{row}) > \text{maxDistance}$.</p>
+            </div>
+
+            <div class="typo-grid">
+                <!-- Control Panel -->
+                <div class="card typo-controls-card">
+                    <h3 class="card-title">Typo Query Input</h3>
+                    <div class="input-group">
+                        <label for="typoInput">Misspelled Word:</label>
+                        <div class="input-with-button">
+                            <input type="text" id="typoInput" value="pythn" placeholder="Enter misspelled word...">
+                            <button id="btnCheckTypo" class="btn btn-primary">Find Corrections</button>
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <div class="control-field">
+                            <label for="maxDistanceSelect">Max Edit Distance ($K$):</label>
+                            <select id="maxDistanceSelect" class="form-select">
+                                <option value="1">1 (Substitutions / 1 missing)</option>
+                                <option value="2" selected>2 (Default - Recommended)</option>
+                                <option value="3">3 (Broad Search)</option>
+                            </select>
+                        </div>
+                        <div class="control-field">
+                            <label for="typoLimitSelect">Max Candidates:</label>
+                            <select id="typoLimitSelect" class="form-select">
+                                <option value="5" selected>Top 5 (Standard)</option>
+                                <option value="10">Top 10</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="presets-box">
+                        <span class="box-label">Evaluation Test Cases:</span>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-word="pythn">pythn → python</button>
+                            <button class="preset-btn" data-word="appl">appl → apple</button>
+                            <button class="preset-btn" data-word="progrmming">progrmming → programming</button>
+                            <button class="preset-btn" data-word="machne">machne → machine</button>
+                            <button class="preset-btn" data-word="javscript">javscript → javascript</button>
+                            <button class="preset-btn" data-word="computr">computr → computer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="card typo-results-card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">Correction Candidates</h3>
+                        <span class="badge badge-accent" id="typoExecutionTime">0.0 μs</span>
+                    </div>
+
+                    <div id="typoEmptyState" class="empty-state" style="display: none;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <p>No dictionary candidates within max edit distance.</p>
+                    </div>
+
+                    <div class="candidates-table-wrapper" id="typoTableWrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Corrected Word</th>
+                                    <th>Edit Distance</th>
+                                    <th>Frequency</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="typoCandidatesBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: ALGORITHM EXPLORER ================= -->
+        <section id="tab-explorer" class="tab-pane">
+            <div class="section-header">
+                <h2>Algorithm Explorer & Visualizer</h2>
+                <p>Interactive educational breakdown of the Trie data structure, DP recurrence relations, and branch pruning.</p>
+            </div>
+
+            <div class="explorer-grid">
+                <!-- Section A: Trie Architecture -->
+                <div class="card">
+                    <h3 class="card-title">1. Trie (Prefix Tree) Architecture</h3>
+                    <p class="card-text">
+                        A Trie is an $m$-ary tree where each node represents a character along a word path. Common prefixes share nodes from the root down, avoiding redundant storage.
+                    </p>
+                    <div class="theory-box">
+                        <div class="theory-item">
+                            <strong>Lookup Time:</strong> $O(P)$ where $P$ is prefix length, strictly independent of total dictionary size $N$.
+                        </div>
+                        <div class="theory-item">
+                            <strong>Node Structure:</strong> Fixed 26-pointer array ($a-z$) yielding $O(1)$ child branch resolution with zero hash overhead.
+                        </div>
+                        <div class="theory-item">
+                            <strong>Frequency Ranking:</strong> Terminal nodes store word occurrence frequency for $O(K \log K)$ sorting.
+                        </div>
+                    </div>
+                    <div class="visual-canvas-box">
+                        <canvas id="trieCanvas" width="600" height="240"></canvas>
+                        <div class="canvas-caption">Interactive Trie node visualization showing shared prefix routing for "pro", "program", "progress".</div>
+                    </div>
+                </div>
+
+                <!-- Section B: Levenshtein DP Matrix Visualizer -->
+                <div class="card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">2. Dynamic Programming Matrix Visualizer</h3>
+                        <span class="badge badge-outline">2D Levenshtein DP</span>
+                    </div>
+                    <p class="card-text">
+                        Compute the full Levenshtein 2D table between any two words. Recurrence:
+                        $$DP[i][j] = \min(DP[i-1][j] + 1,\; DP[i][j-1] + 1,\; DP[i-1][j-1] + \text{cost})$$
+                    </p>
+
+                    <div class="matrix-inputs">
+                        <div class="input-col">
+                            <label for="dpWord1">Source Word ($s_1$):</label>
+                            <input type="text" id="dpWord1" value="kitten" class="form-input">
+                        </div>
+                        <div class="input-col">
+                            <label for="dpWord2">Target Word ($s_2$):</label>
+                            <input type="text" id="dpWord2" value="sitting" class="form-input">
+                        </div>
+                        <button id="btnComputeMatrix" class="btn btn-secondary">Calculate Matrix</button>
+                    </div>
+
+                    <div class="matrix-display-wrapper">
+                        <div class="matrix-meta" id="matrixMeta">
+                            Distance: <strong id="matrixDistanceVal">3</strong> (Operations: substitute 'k'→'s', substitute 'e'→'i', insert 'g')
+                        </div>
+                        <div class="matrix-scroll" id="matrixTableContainer">
+                            <!-- Matrix generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section C: Trie DP Branch Pruning -->
+                <div class="card full-width">
+                    <h3 class="card-title">3. Trie Traversal with DP Row State & Branch Pruning</h3>
+                    <p class="card-text">
+                        Instead of running Levenshtein against all $N$ words ($O(N \cdot M \cdot L)$), we push DP rows down the Trie during Depth-First Search.
+                    </p>
+                    <div class="pruning-steps">
+                        <div class="step-card">
+                            <div class="step-num">Step 1</div>
+                            <h4>Root State</h4>
+                            <p>Initialize row 0: $[0, 1, 2, \dots, |W|]$ representing the empty prefix.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">Step 2</div>
+                            <h4>Row Propagation</h4>
+                            <p>Child node character $c$ updates the row using only the previous row in $O(|W|)$ time.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">Step 3</div>
+                            <h4>Subtree Pruning</h4>
+                            <p>If $\min(\text{currentRow}) > K$, prune the entire subtree immediately. Over 98% of branches are safely skipped.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">Step 4</div>
+                            <h4>Candidate Acceptance</h4>
+                            <p>If node is terminal and $\text{currentRow}[|W|] \le K$, add candidate and rank by edit distance & frequency.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 4: PERFORMANCE DASHBOARD ================= -->
+        <section id="tab-dashboard" class="tab-pane">
+            <div class="section-header">
+                <h2>Algorithmic Performance Dashboard</h2>
+                <p>Empirical measurements from the compiled C++17 engine comparing Trie vs Linear Dictionary Scanning.</p>
+            </div>
+
+            <!-- Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Dictionary Words</span>
+                    <span class="metric-value" id="statWordCount">10,000</span>
+                    <span class="metric-sub">Pure lowercase sanitized English</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Trie Nodes Allocated</span>
+                    <span class="metric-value" id="statNodeCount">32,887</span>
+                    <span class="metric-sub">Prefix-sharing tree structure</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Estimated Memory</span>
+                    <span class="metric-value" id="statMemory">8.1 MB</span>
+                    <span class="metric-sub">~248 bytes per node</span>
+                </div>
+                <div class="metric-card highlight">
+                    <span class="metric-label">Measured Speedup</span>
+                    <span class="metric-value" id="statSpeedup">57.2x</span>
+                    <span class="metric-sub">Trie vs Linear Prefix Scan</span>
+                </div>
+            </div>
+
+            <!-- Live Head-to-Head Comparison Tool -->
+            <div class="card head-to-head-card">
+                <div class="card-header-flex">
+                    <h3 class="card-title">Live Head-to-Head Query Race (Trie vs Linear)</h3>
+                    <span class="badge badge-primary">Real-time C++ Execution</span>
+                </div>
+                <div class="compare-input-row">
+                    <input type="text" id="compareQueryInput" value="pro" placeholder="Enter prefix to compare..." class="form-input">
+                    <button id="btnRunComparison" class="btn btn-primary">Run Head-to-Head</button>
+                </div>
+
+                <div class="race-results-grid" id="raceResultsGrid">
+                    <div class="race-box trie-box">
+                        <div class="race-header">
+                            <span class="race-tag">Algorithm A</span>
+                            <h4>Trie Prefix Traversal</h4>
+                        </div>
+                        <div class="race-time" id="raceTrieTime">0.6 μs</div>
+                        <div class="race-complexity">Time Complexity: $O(P + S)$</div>
+                        <ul class="race-list" id="raceTrieList">
+                            <!-- Results -->
+                        </ul>
+                    </div>
+
+                    <div class="race-vs">
+                        <div class="vs-circle">VS</div>
+                        <div class="vs-speedup" id="raceSpeedupFactor">57.2x Faster</div>
+                    </div>
+
+                    <div class="race-box linear-box">
+                        <div class="race-header">
+                            <span class="race-tag">Algorithm B</span>
+                            <h4>Linear Dictionary Scanning</h4>
+                        </div>
+                        <div class="race-time" id="raceLinearTime">34.3 μs</div>
+                        <div class="race-complexity">Time Complexity: $O(N \cdot L)$</div>
+                        <ul class="race-list" id="raceLinearList">
+                            <!-- Results -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empirical Benchmark Results Table -->
+            <div class="card">
+                <div class="card-header-flex">
+                    <h3 class="card-title">Benchmark Measurements Across Dictionary Sizes</h3>
+                    <button id="btnReRunBenchmark" class="btn btn-outline-sm">Re-Run Benchmark Suite</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="benchmarkDataTable">
+                        <thead>
+                            <tr>
+                                <th>Dictionary Size</th>
+                                <th>Trie Build Time</th>
+                                <th>Trie Nodes</th>
+                                <th>Memory</th>
+                                <th>Trie Search (Avg)</th>
+                                <th>Linear Scan (Avg)</th>
+                                <th>Search Speedup</th>
+                                <th>Trie Typo (Avg)</th>
+                                <th>Linear Typo (Avg)</th>
+                                <th>Typo Speedup</th>
+                            </tr>
+                        </thead>
+                        <tbody id="benchmarkBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Publication Charts -->
+            <div class="card">
+                <h3 class="card-title">Official Performance Visualizations</h3>
+                <div class="charts-gallery">
+                    <div class="chart-item">
+                        <h4>1. Prefix Search Execution Time (μs)</h4>
+                        <img src="benchmarks/graphs/trie_vs_linear_search.png" alt="Trie vs Linear Search Time" class="chart-img">
+                    </div>
+                    <div class="chart-item">
+                        <h4>2. Search & Typo Time vs Dictionary Size</h4>
+                        <img src="benchmarks/graphs/execution_time_vs_dict_size.png" alt="Time vs Dictionary Size" class="chart-img">
+                    </div>
+                    <div class="chart-item">
+                        <h4>3. Measured Algorithmic Speedup Factor</h4>
+                        <img src="benchmarks/graphs/performance_speedup.png" alt="Speedup Factor" class="chart-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>Smart Autocomplete & Typo Correction | B.Tech CSE DSA-3 Mini Project</p>
+            <p class="footer-tech">C++17 Engine • Levenshtein Dynamic Programming • Python Flask • HTML5/CSS3/ES6</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+

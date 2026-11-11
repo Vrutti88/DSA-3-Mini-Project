@@ -1,0 +1,16 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# C++ Build artifacts
+build/
+bin/
+*.o
+*.a
+*.dylib
+*.out
+.DS_Store
+
+# Benchmark temporary caches
+benchmarks/results/*.tmp
